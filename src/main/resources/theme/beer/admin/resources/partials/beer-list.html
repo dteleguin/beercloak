@@ -1,0 +1,64 @@
+<div class="col-sm-9 col-md-10 col-sm-push-3 col-md-push-2">
+
+    <h1>{{:: 'beer' | translate}}</h1>
+
+    <table class="table table-striped table-bordered">
+        <caption data-ng-show="beers" class="hidden">{{:: 'table-of-beers' | translate}}</caption>
+        <thead>
+        <tr>
+            <th colspan="5">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" placeholder="{{:: 'search.placeholder' | translate}}" data-ng-model="query.search" class="form-control search" onkeydown="if (event.keyCode == 13) document.getElementById('beerSearch').click()">
+                            <div class="input-group-addon">
+                                    <i class="fa fa-search" id="beerSearch" data-ng-click="firstPage()"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="viewAllBeers" class="btn btn-default" ng-click="query.search = null; firstPage()">{{:: 'view-all-beers' | translate}}</button>
+
+                    <div class="pull-right" data-ng-show="access.manageBeer">
+                        <a id="createBeer" class="btn btn-default" href="#/create/beer/{{realm.realm}}">{{:: 'add-beer' | translate}}</a>
+                    </div>
+                </div>
+            </th>
+        </tr>
+        <tr>
+        <tr data-ng-show="searchLoaded && beers.length > 0">
+            <th class="w-15">{{:: 'name' | translate}}</th>
+            <th class="w-15">{{:: 'type' | translate}}</th>
+            <th class="w-15">{{:: 'abv' | translate}}</th>
+            <th colspan="2" class="w-15">{{:: 'actions' | translate}}</th>
+        </tr>
+        </tr>
+        </thead>
+        <tfoot data-ng-show="beers && (beers.length >= query.max || query.first > 0)">
+        <tr>
+            <td colspan="6">
+                <div class="table-nav">
+                    <button data-ng-click="firstPage()" class="first" ng-disabled="query.first == 0">{{:: 'first-page' | translate}}</button>
+                    <button data-ng-click="previousPage()" class="prev" ng-disabled="query.first == 0">{{:: 'previous-page' | translate}}</button>
+                    <button data-ng-click="nextPage()" class="next" ng-disabled="users.length < query.max">{{:: 'next-page' | translate}}</button>
+                </div>
+            </td>
+        </tr>
+        </tfoot>
+        <tbody>
+        <tr ng-repeat="beer in beers">
+            <td class="clip"><a href="#/realms/{{realm.realm}}/beers/{{beer.id}}">{{beer.name}}</a></td>
+            <td class="clip">{{beer.type}}</td>
+            <td class="clip">{{beer.abv}}</td>
+            <td class="kc-action-cell" kc-open="/realms/{{realm.realm}}/beers/{{beer.id}}">{{:: 'edit' | translate}}</td>
+            <td data-ng-show="access.manageBeer" class="kc-action-cell" data-ng-click="removeBeer(beer)">{{:: 'delete' | translate}}</td>
+        </tr>
+        <tr data-ng-show="!beers || beers.length == 0">
+            <td class="text-muted" data-ng-show="!beers">{{:: 'beers.instruction' | translate}}</td>
+            <td class="text-muted" data-ng-show="searchLoaded && beers.length == 0 && lastSearch != null">{{:: 'no-results' | translate}}</td>
+            <td class="text-muted" data-ng-show="searchLoaded && beers.length == 0 && lastSearch == null">{{:: 'no-beers-available' | translate}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<kc-menu></kc-menu>

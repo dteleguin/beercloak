@@ -1,0 +1,74 @@
+<div class="col-sm-9 col-md-10 col-sm-push-3 col-md-push-2">
+    <ol class="breadcrumb">
+        <li><a href="#/realms/{{realm.realm}}/beers">{{:: 'beer' | translate}}</a></li>
+        <li data-ng-hide="create">{{beer.name}}</li>
+        <li data-ng-show="create">{{:: 'add-beer' | translate}}</li>
+    </ol>
+
+    <form class="form-horizontal" name="beerForm" novalidate kc-read-only="!access.manageBeer">
+
+        <fieldset class="border-top">
+
+            <div class="form-group" data-ng-if="!create">
+                <label class="col-md-2 control-label"for="id">{{:: 'id' | translate}}</label>
+                <div class="col-md-6">
+                    <input class="form-control" type="text" id="id" name="id" data-ng-model="beer.id" data-ng-readonly="true">
+                </div>
+            </div>
+
+            <div class="form-group" data-ng-if="!create && access.manageBeer">
+                <label class="col-md-2 control-label" for="drink">{{:: 'drink' | translate}}</label>
+                <div class="col-md-1">
+                    <input class="form-control" type="number" min="0" id="qty" name="qty" data-ng-model="qty">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-primary" id="drink" type="button" data-ng-click="drink(qty)">{{:: 'gulp' | translate}}</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="name">{{:: 'name' | translate}} <span class="required" data-ng-show="create">*</span></label>
+                <div class="col-md-6">
+                    <input class="form-control" type="text" name="name" id="name" required data-ng-model="beer.name">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="type">{{:: 'beer-type' | translate}}</label>
+                <div class="col-md-2">
+                    <div>
+                        <select class="form-control" id="type"
+                                data-ng-show="typesLoaded"
+                                data-ng-model="beer.type"
+                                ng-options="t as t for t in types">
+                            <option value="" disabled selected>{{:: 'select-one.placeholder' | translate}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': beerForm.abv.$invalid}">
+                <label for="abv" class="col-sm-2 control-label">ABV</label>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" name="abv" placeholder="ABV" ng-model="beer.abv" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" max="20" step="0.1" required />
+                </div>
+            </div>
+
+        </fieldset>
+
+        <div class="form-group">
+            <div class="col-md-10 col-md-offset-2" data-ng-show="create && access.manageBeer">
+                <button kc-save data-ng-show="changed">{{:: 'save' | translate}}</button>
+                <button kc-cancel data-ng-click="cancel()">{{:: 'cancel' | translate}}</button>
+            </div>
+
+            <div class="col-md-10 col-md-offset-2" data-ng-show="!create && access.manageBeer">
+                <button kc-save  data-ng-disabled="!changed">{{:: 'save' | translate}}</button>
+                <button kc-reset data-ng-disabled="!changed">{{:: 'cancel' | translate}}</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<kc-menu></kc-menu>

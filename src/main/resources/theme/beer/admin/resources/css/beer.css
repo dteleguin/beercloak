@@ -1,0 +1,26 @@
+.img-gulp {
+    width: 379px;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.img-sober {
+    background-image: url("../img/sober.png");
+}
+
+.img-tipsy {
+    background-image: url("../img/tipsy.png");
+}
+
+.img-drunk {
+    background-image: url("../img/drunk.png");
+}
+
+.img-wasted {
+    background-image: url("../img/wasted.png");
+}
+
+.img-kaputt {
+    background-image: url("../img/kaputt.png");
+}

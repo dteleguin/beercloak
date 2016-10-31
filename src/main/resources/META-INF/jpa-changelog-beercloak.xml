@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+
+    <changeSet author="mitya@cargosoft.ru" id="beercloak-1.0">
+
+        <createTable tableName="BEER">
+
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="REALM_ID" type="VARCHAR(36)"/>
+
+            <column name="NAME" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="TYPE" type="VARCHAR(32)"/>
+
+            <column name="ABV" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addPrimaryKey columnNames="ID" constraintName="PK_BEER_ID" tableName="BEER"/>
+        <addUniqueConstraint columnNames="NAME,REALM_ID" constraintName="UK_BEER_NAME" tableName="BEER"/>
+
+        <createIndex indexName="IDX_BEER_NAME" tableName="BEER">
+            <column name="NAME" type="VARCHAR(64)"/>
+        </createIndex>
+
+        <createTable tableName="BEER_USER_ENTITY">
+
+            <column name="BEERENTITY_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="DRINKERS_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="BEERENTITY_ID" baseTableName="BEER_USER_ENTITY" constraintName="FK_BEER_DRINKER_BEER" referencedColumnNames="ID" referencedTableName="BEER"/>
+        <addForeignKeyConstraint baseColumnNames="DRINKERS_ID" baseTableName="BEER_USER_ENTITY" constraintName="FK_BEER_DRINKER" referencedColumnNames="ID" referencedTableName="USER_ENTITY"/>
+        <addUniqueConstraint columnNames="DRINKERS_ID" constraintName="UK_BEER_DRINKER" tableName="BEER_USER_ENTITY"/>
+
+    </changeSet>
+
+</databaseChangeLog>
