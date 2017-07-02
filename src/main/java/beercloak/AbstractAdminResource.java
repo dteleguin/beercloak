@@ -4,11 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
@@ -28,6 +27,8 @@ import org.keycloak.services.resources.admin.AdminEventBuilder;
  * @param <T> type of AdminAuth
  */
 public abstract class AbstractAdminResource<T extends AdminAuth> {
+
+    private static final Logger LOG = Logger.getLogger(AbstractAdminResource.class);
 
     @Context
     private HttpHeaders headers;
@@ -88,7 +89,7 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
             Constructor<? extends Type> constructor = clazz.getConstructor(RealmModel.class, AccessToken.class, UserModel.class, ClientModel.class);
             auth = (T) constructor.newInstance(new Object[] { realm, token, user, client });
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(AbstractAdminResource.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error("Failed to instantiate AdminAuth instance", ex);
         }
 
     }

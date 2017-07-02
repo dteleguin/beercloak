@@ -4,6 +4,7 @@ import static beercloak.BeerAdminAuth.ROLE_MANAGE_BEER;
 import static beercloak.BeerAdminAuth.ROLE_VIEW_BEER;
 import java.util.List;
 import javax.persistence.EntityManager;
+import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.AdminRoles;
@@ -23,6 +24,7 @@ import org.keycloak.services.resource.RealmResourceProviderFactory;
 public class BeerResourceProviderFactory implements RealmResourceProviderFactory {
 
     private static final String ID = "beer";
+    private static final Logger LOG = Logger.getLogger(BeerResourceProviderFactory.class);
 
     @Override
     public String getId() {
@@ -45,6 +47,8 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
+
+        LOG.debug("BeerResourceProviderFactory::postInit");
 
         /*
           Due to some bug introduced in KC 2.2.x, this can cause sporadic java.sql.SQLException at startup
