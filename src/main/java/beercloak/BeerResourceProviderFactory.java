@@ -3,6 +3,9 @@ package beercloak;
 import static beercloak.BeerAdminAuth.ROLE_MANAGE_BEER;
 import static beercloak.BeerAdminAuth.ROLE_VIEW_BEER;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
@@ -51,26 +54,37 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
         LOG.debug("BeerResourceProviderFactory::postInit");
 
         /*
-          Due to some bug introduced in KC 2.2.x, this can cause sporadic java.sql.SQLException at startup
-          (java.sql.SQLException: IJ031017: You cannot set autocommit during a managed transaction)
-          Once you've had a successful startup and the roles have been created, you can comment out this block.
+        Workaround for https://issues.jboss.org/browse/KEYCLOAK-5132
+        To be able to use transactions from within ProviderFactory::postInit, one has to start a separate thread.
+        In order to be able to access Infinispan (via JNDI), this has to be a managed thread.
+        This however doesn't apply to the hot (re)deployment case.
         */
-
-        KeycloakModelUtils.runJobInTransaction(factory, (KeycloakSession session) -> {
-            ClientModel client;
-            List<RealmModel> realms = session.realms().getRealms();
-            RealmManager manager = new RealmManager(session);
-            for (RealmModel realm : realms) {
-                client = realm.getMasterAdminClient();
-                if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null)
-                    addMasterAdminRoles(manager, realm);
-                if (!realm.getName().equals(Config.getAdminRealm())) {
-                    client = realm.getClientByClientId(manager.getRealmAdminClientId(realm));
+        Runnable task = () -> {
+            KeycloakModelUtils.runJobInTransaction(factory, (KeycloakSession session) -> {
+                ClientModel client;
+                List<RealmModel> realms = session.realms().getRealms();
+                RealmManager manager = new RealmManager(session);
+                for (RealmModel realm : realms) {
+                    client = realm.getMasterAdminClient();
                     if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null)
-                        addRealmAdminRoles(manager, realm);
+                        addMasterAdminRoles(manager, realm);
+                    if (!realm.getName().equals(Config.getAdminRealm())) {
+                        client = realm.getClientByClientId(manager.getRealmAdminClientId(realm));
+                        if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null)
+                            addRealmAdminRoles(manager, realm);
+                    }
                 }
-            }
-        });
+            });
+        };
+
+        try {
+            ThreadFactory mtf = (ThreadFactory) new InitialContext().lookup("java:comp/DefaultManagedThreadFactory");
+            LOG.debug("Server startup, using a dedicated thread");
+            mtf.newThread(task).start();
+        } catch (NamingException ex) {
+            LOG.debug("Hot (re)deploy, using current thread");
+            task.run();
+        }
 
         factory.register((ProviderEvent event) -> {
             if (event instanceof RealmModel.RealmPostCreateEvent) {
