@@ -1,22 +1,21 @@
 package beercloak;
 
+import static beercloak.BeerAdminAuth.ROLE_MANAGE_BEER;
+import static beercloak.BeerAdminAuth.ROLE_VIEW_BEER;
+import java.util.List;
+import javax.persistence.EntityManager;
 import org.keycloak.Config;
+import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.models.AdminRoles;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
+import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.provider.ProviderEvent;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
-
-import java.util.List;
-import org.keycloak.models.utils.KeycloakModelUtils;
-import static beercloak.BeerAdminAuth.ROLE_VIEW_BEER;
-import static beercloak.BeerAdminAuth.ROLE_MANAGE_BEER;
-import javax.persistence.EntityManager;
-import org.keycloak.connections.jpa.JpaConnectionProvider;
 
 /**
  * @author <a href="mailto:mitya@cargosoft.ru">Dmitry Telegin</a>
