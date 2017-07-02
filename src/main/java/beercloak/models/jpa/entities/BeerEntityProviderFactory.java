@@ -11,7 +11,7 @@ import org.keycloak.models.KeycloakSessionFactory;
  */
 public class BeerEntityProviderFactory implements JpaEntityProviderFactory {
 
-	protected static final String ID = "beer-entity-provider";
+    protected static final String ID = "beer-entity-provider";
 
     @Override
     public JpaEntityProvider create(KeycloakSession session) {
