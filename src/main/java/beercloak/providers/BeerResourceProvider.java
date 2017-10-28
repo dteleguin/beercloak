@@ -1,5 +1,6 @@
-package beercloak;
+package beercloak.providers;
 
+import beercloak.resources.BeerResource;
 import javax.persistence.EntityManager;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.models.KeycloakSession;

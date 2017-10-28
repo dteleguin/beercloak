@@ -1,4 +1,4 @@
-package beercloak;
+package beercloak.resources;
 
 import beercloak.models.jpa.entities.BeerEntity;
 import beercloak.representations.BeerRepresentation;

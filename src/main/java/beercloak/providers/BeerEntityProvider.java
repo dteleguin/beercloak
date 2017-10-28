@@ -1,5 +1,6 @@
-package beercloak.models.jpa.entities;
+package beercloak.providers;
 
+import beercloak.models.jpa.entities.BeerEntity;
 import java.util.Collections;
 import java.util.List;
 

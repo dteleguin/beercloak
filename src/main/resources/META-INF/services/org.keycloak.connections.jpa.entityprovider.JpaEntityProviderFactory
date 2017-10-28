@@ -1,1 +1,1 @@
-beercloak.models.jpa.entities.BeerEntityProviderFactory
+beercloak.providers.BeerEntityProviderFactory

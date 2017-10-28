@@ -1,4 +1,4 @@
-package beercloak.models.jpa.entities;
+package beercloak.providers;
 
 import beercloak.BeerManager;
 import org.keycloak.Config.Scope;

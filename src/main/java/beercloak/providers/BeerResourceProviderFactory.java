@@ -1,7 +1,7 @@
-package beercloak;
+package beercloak.providers;
 
-import static beercloak.BeerAdminAuth.ROLE_MANAGE_BEER;
-import static beercloak.BeerAdminAuth.ROLE_VIEW_BEER;
+import static beercloak.resources.BeerAdminAuth.ROLE_MANAGE_BEER;
+import static beercloak.resources.BeerAdminAuth.ROLE_VIEW_BEER;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import javax.naming.InitialContext;
