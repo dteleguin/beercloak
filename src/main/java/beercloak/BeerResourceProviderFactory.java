@@ -87,16 +87,18 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
         }
 
         factory.register((ProviderEvent event) -> {
-            if (event instanceof RealmModel.RealmPostCreateEvent) {
-                RealmModel.RealmPostCreateEvent postCreate = (RealmModel.RealmPostCreateEvent) event;
-                RealmModel realm = postCreate.getCreatedRealm();
-                RealmManager manager = new RealmManager(postCreate.getKeycloakSession());
-                addMasterAdminRoles(manager, realm);
-                if (!realm.getName().equals(Config.getAdminRealm()))
-                    addRealmAdminRoles(manager, realm);
-            }
+            if (event instanceof RealmModel.RealmPostCreateEvent)
+                realmPostCreate((RealmModel.RealmPostCreateEvent) event);
         });
 
+    }
+
+    private void realmPostCreate(RealmModel.RealmPostCreateEvent event) {
+        RealmModel realm = event.getCreatedRealm();
+        RealmManager manager = new RealmManager(event.getKeycloakSession());
+        addMasterAdminRoles(manager, realm);
+        if (!realm.getName().equals(Config.getAdminRealm()))
+            addRealmAdminRoles(manager, realm);
     }
 
     private void addMasterAdminRoles(RealmManager manager, RealmModel realm) {
