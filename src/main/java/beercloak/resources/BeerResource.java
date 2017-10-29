@@ -70,10 +70,10 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         TypedQuery<BeerEntity> query;
 
         if (search != null) {
-            query = em.createQuery("select b from BeerEntity b where b.realmId = :realmId and (b.name like :search or b.type like :search) order by b.name", BeerEntity.class);
+            query = em.createNamedQuery("findBeers", BeerEntity.class);
             query.setParameter("search", "%" + search + "%");
         } else {
-            query = em.createQuery("select b from BeerEntity b where b.realmId = :realmId order by b.name", BeerEntity.class);
+            query = em.createNamedQuery("findAllBeers", BeerEntity.class);
         }
 
         query.setParameter("realmId", session.getContext().getRealm().getId());
@@ -226,7 +226,7 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         RealmModel realm = session.getContext().getRealm();
 
         try {
-            BeerEntity beer = em.createQuery("select b from BeerEntity b where b.realmId = :realmId and b.id = :id", BeerEntity.class)
+            BeerEntity beer = em.createNamedQuery("findBeer", BeerEntity.class)
                     .setParameter("id", id)
                     .setParameter("realmId", realm.getId())
                     .getSingleResult();

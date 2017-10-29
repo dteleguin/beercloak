@@ -22,7 +22,7 @@ public class BeerManager {
     }
 
     public int removeAllBeer() {
-        Query query = em.createQuery("DELETE FROM BeerEntity b WHERE b.realmId = :realmId");
+        Query query = em.createNamedQuery("removeAllBeers");
         query.setParameter("realmId", realm.getId());
         return query.executeUpdate();
     }

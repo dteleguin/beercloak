@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -21,6 +23,12 @@ import org.keycloak.models.jpa.entities.UserEntity;
 @Entity
 @Table(name = "BEER", uniqueConstraints = {
     @UniqueConstraint(columnNames = { "REALM_ID", "NAME" })
+})
+@NamedQueries({
+    @NamedQuery(name = "findBeer", query = "SELECT b FROM BeerEntity b WHERE b.realmId = :realmId AND b.id = :id"),
+    @NamedQuery(name = "findBeers", query = "SELECT b FROM BeerEntity b WHERE b.realmId = :realmId AND (lower(b.name) LIKE lower(:search) OR lower(b.type) LIKE lower(:search)) ORDER BY b.name"),
+    @NamedQuery(name = "findAllBeers", query = "SELECT b FROM BeerEntity b WHERE b.realmId = :realmId ORDER BY b.name"),
+    @NamedQuery(name = "removeAllBeers", query = "DELETE FROM BeerEntity b WHERE b.realmId = :realmId")
 })
 public class BeerEntity implements Serializable {
 
