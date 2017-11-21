@@ -1,5 +1,6 @@
 package beercloak.resources;
 
+import beercloak.Drunkenness;
 import beercloak.models.jpa.entities.BeerEntity;
 import beercloak.representations.BeerRepresentation;
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
         int qty = _qty[0];
 
-        Drunkenness d = qty == 0 ? Drunkenness.SOBER : Drunkenness.values()[Integer.min(4, (int)Math.floor(qty * beer.getAbv() / 4.7 / 10 * 3 + 1))];
+        Drunkenness d = Drunkenness.drunk(beer.getAbv(), qty);
 
         adminEvent
                 .operation(OperationType.ACTION)
@@ -249,26 +250,6 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         rep.setAbv(entity.getAbv());
 
         return rep;
-
-    }
-
-    private static enum Drunkenness {
-
-        SOBER(0),
-        TIPSY(1),
-        DRUNK(2),
-        WASTED(3),
-        KAPUTT(4);
-
-        private final int value;
-
-        Drunkenness(int value) {
-            this.value = value;
-        }
-
-        int value() {
-            return this.value;
-        }
 
     }
 

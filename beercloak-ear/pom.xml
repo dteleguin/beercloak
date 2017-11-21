@@ -3,12 +3,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>beercloak</groupId>
-    <artifactId>beercloak</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>ear</packaging>
-
     <name>BeerCloak EAR</name>
+
+    <parent>
+        <groupId>beercloak</groupId>
+        <artifactId>beercloak-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>beercloak</artifactId>
+    <packaging>ear</packaging>
 
     <dependencies>
         <dependency>

@@ -13,6 +13,7 @@
     <modules>
         <module>beercloak-module</module>
         <module>beercloak-ear</module>
+        <module>beercloak-core</module>
     </modules>
 
 </project>
