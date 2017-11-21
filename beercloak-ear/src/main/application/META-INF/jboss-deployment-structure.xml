@@ -2,6 +2,8 @@
 <jboss-deployment-structure>
     <deployment>
         <module-alias name="deployment.beercloak"/>
+    </deployment>
+    <sub-deployment name="beercloak-module.jar">
         <dependencies>
             <module name="javax.persistence.api"/>
             <module name="javax.servlet.api"/>
@@ -19,5 +21,5 @@
             <module name="org.keycloak.keycloak-model-infinispan"/>
             <module name="org.keycloak.keycloak-services"/>
         </dependencies>
-    </deployment>
+    </sub-deployment>
 </jboss-deployment-structure>
