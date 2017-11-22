@@ -3,7 +3,6 @@ package beercloak.providers;
 import static beercloak.resources.BeerAdminAuth.ROLE_MANAGE_BEER;
 import static beercloak.resources.BeerAdminAuth.ROLE_VIEW_BEER;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -17,6 +16,7 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.models.utils.PostMigrationEvent;
 import org.keycloak.provider.ProviderEvent;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
@@ -40,6 +40,7 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
 
     @Override
     public BeerResourceProvider create(KeycloakSession session) {
+        LOG.debug("BeerResourceProviderFactory::create");
         EntityManager em = session.getProvider(JpaConnectionProvider.class).getEntityManager();
         return new BeerResourceProvider(session, em);
     }
@@ -54,43 +55,76 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
         LOG.debug("BeerResourceProviderFactory::postInit");
 
         /*
-        Workaround for https://issues.jboss.org/browse/KEYCLOAK-5132
-        To be able to use transactions from within ProviderFactory::postInit, one has to start a separate thread.
-        In order to be able to access Infinispan (via JNDI), this has to be a managed thread.
-        This however doesn't apply to the hot (re)deployment case.
-        */
-        Runnable task = () -> {
-            KeycloakModelUtils.runJobInTransaction(factory, (KeycloakSession session) -> {
-                ClientModel client;
-                List<RealmModel> realms = session.realms().getRealms();
-                RealmManager manager = new RealmManager(session);
-                for (RealmModel realm : realms) {
-                    client = realm.getMasterAdminClient();
-                    if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null)
-                        addMasterAdminRoles(manager, realm);
-                    if (!realm.getName().equals(Config.getAdminRealm())) {
-                        client = realm.getClientByClientId(manager.getRealmAdminClientId(realm));
-                        if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null)
-                            addRealmAdminRoles(manager, realm);
-                    }
-                }
-            });
-        };
+        Depending on how we are deployed, we need to access data model differently.
 
-        try {
-            ThreadFactory mtf = (ThreadFactory) new InitialContext().lookup("java:comp/DefaultManagedThreadFactory");
-            LOG.debug("Server startup, using a dedicated thread");
-            mtf.newThread(task).start();
-        } catch (NamingException ex) {
+        When cold deployed (i.e. provider is either present at "deployments" subdirectory or deployed as a JBoss module),
+        postInit is invoked too early, specifically before initial realm population/migration.
+        In this case we should wait for PostMigrationEvent first. No transaction management needed, as transaction will be active already.
+
+        When hot deployed, PostMigrationEvent won't arrive, so we can do stuff right away, provided that we wrap it in a transaction.
+
+        NB: hot deployment is NOT yet supported for EntityProviders!
+        Thus, hot deploying BeerCloak will result in exceptions and non-working code.
+        This code is here only to demonstrate correct postInit implementation for all deployment modes.
+        See https://issues.jboss.org/browse/KEYCLOAK-5782 for more.
+        */
+
+        if (isHotDeploying()) {
             LOG.debug("Hot (re)deploy, using current thread");
-            task.run();
+            KeycloakModelUtils.runJobInTransaction(factory, this::initRoles);
+        } else {
+            LOG.debug("Server startup, waiting for PostMigrationEvent");
         }
 
         factory.register((ProviderEvent event) -> {
             if (event instanceof RealmModel.RealmPostCreateEvent)
                 realmPostCreate((RealmModel.RealmPostCreateEvent) event);
+            else if (event instanceof PostMigrationEvent)
+                initRoles(((PostMigrationEvent) event).getSession());
         });
 
+    }
+
+    private boolean isHotDeploying() {
+
+        /*
+        At the moment there's no standard way to determine if we are being cold or hot deployed.
+        One of the ad-hoc methods is to check for JNDI presence/absence.
+        Another methods include querying current thread name and RESTEasy features.
+
+        See discussion: http://lists.jboss.org/pipermail/keycloak-dev/2017-July/009639.html
+        */
+
+        try {
+            // JNDI present, we're invoked from an application thread, that means cold deployment
+            new InitialContext().lookup("java:comp");
+            return false;
+        } catch (NamingException ex) {
+            // JNDI absent, server thread, hot deployment
+            return true;
+        }
+
+    }
+
+    private void initRoles(KeycloakSession session) {
+
+        LOG.debug("BeerResourceProviderFactory::initRoles");
+
+        ClientModel client;
+        List<RealmModel> realms = session.realms().getRealms();
+        RealmManager manager = new RealmManager(session);
+        for (RealmModel realm : realms) {
+            client = realm.getMasterAdminClient();
+            if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null) {
+                addMasterAdminRoles(manager, realm);
+            }
+            if (!realm.getName().equals(Config.getAdminRealm())) {
+                client = realm.getClientByClientId(manager.getRealmAdminClientId(realm));
+                if (client.getRole(ROLE_VIEW_BEER) == null && client.getRole(ROLE_MANAGE_BEER) == null) {
+                    addRealmAdminRoles(manager, realm);
+                }
+            }
+        }
     }
 
     private void realmPostCreate(RealmModel.RealmPostCreateEvent event) {

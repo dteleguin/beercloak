@@ -1,6 +1,7 @@
 package beercloak.providers;
 
 import beercloak.BeerManager;
+import org.jboss.logging.Logger;
 import org.keycloak.Config.Scope;
 import org.keycloak.connections.jpa.entityprovider.JpaEntityProvider;
 import org.keycloak.connections.jpa.entityprovider.JpaEntityProviderFactory;
@@ -14,9 +15,11 @@ import org.keycloak.models.RealmModel;
 public class BeerEntityProviderFactory implements JpaEntityProviderFactory {
 
     protected static final String ID = "beer-entity-provider";
+    private static final Logger LOG = Logger.getLogger(BeerEntityProviderFactory.class);
 
     @Override
     public JpaEntityProvider create(KeycloakSession session) {
+        LOG.debug("BeerEntityProviderFactory::create");
         return new BeerEntityProvider();
     }
 
