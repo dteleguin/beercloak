@@ -1,6 +1,6 @@
-# BeerCloak: a comprehensive KeyCloak extension example
+# BeerCloak: a comprehensive Keycloak extension example
 
-BeerCloak is a collection of different techniques for building custom admin resources in KeyCloak.
+BeerCloak is a collection of different techniques for building custom admin resources in Keycloak.
 
 * `BeerEntity` JPA entity + LiquiBase changelog;
 * `BeerResource` realm REST resource with CRUD operations & more;
@@ -15,11 +15,17 @@ BeerCloak is a collection of different techniques for building custom admin reso
   * custom resource and action types (not yet implemented)
 * GUI extensions to the admin console.
 
-The code to setup authorization and logging has been moved into the AbstractAdminResource class. It is ready to be used as a base class for admin resources.
+The `beercloak.resources.AbstractAdminResource` is ready to be used as a base class for admin resources. It contains the code necessary to setup authorization and logging.
+
+### Structure
+
+`beercloak-core`: "core" module with some "business logic", to demonstrate packaging with dependencies  
+`beercloak-module`: main module actually containing providers and everything (depends on `beercloak-core`)  
+`beercloak-ear`: EAR packaging module to combine all the above into a deployable EAR 
 
 ## Requirements
 
-* KeyCloak 3.1.0.Final
+* Keycloak 3.4.0.Final
 
 ## Build
 
@@ -27,8 +33,37 @@ The code to setup authorization and logging has been moved into the AbstractAdmi
 
 ## Installation
 
-Just drop the `target/beercloak-XXX.jar` into the `standalone/deployments` directory.
+1. Copy `beercloak-ear/target/beercloak-XXX.ear` into Keycloak's `standalone/deployments` directory.
+
+**Warning!** While Keycloak generally supports hot deployment of providers, this is *not supported* for EntityProviders.
+That means, BeerCloak shouldn't be hot deployed, otherwise you'll get exceptions and non-working code.  
+See [KEYCLOAK-5782](https://issues.jboss.org/browse/KEYCLOAK-5782) for more info.
+
+2. Configure theme in your `standalone/configuration/standalone.xml`:
+```xml
+        <subsystem xmlns="urn:jboss:domain:keycloak-server:1.1">
+            ...
+            <theme>
+                <staticMaxAge>2592000</staticMaxAge>
+                <cacheThemes>true</cacheThemes>
+                <cacheTemplates>true</cacheTemplates>
+                <dir>${jboss.home.dir}/themes</dir>
+                <!-- Here we go -->
+                <modules>
+                    <module>
+                        deployment.beercloak
+                    </module>
+                </modules>
+                <default>beer</default>
+            </theme>
+            ...
+        </subsystem>
+ ```
+ 
+ You can omit `<default>beer</default>`, but then you'll have to manually choose the "beer" theme in realm configuration → Themes → Admin console theme.
+ 
+(Currently, if you ship a theme inside your module, you have to configure it manually in the XML config. This may change in the future with automatic deployment of themes, you can track progress under [KEYCLOAK-4547](https://issues.jboss.org/browse/KEYCLOAK-4547))
 
 ## Running example
 
-Run KeyCloak and log into the admin console. You should be able to access the "Beer" menu item.
+Run Keycloak and log into the admin console. You should be able to access the "Beer" menu item.
