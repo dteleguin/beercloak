@@ -36,7 +36,7 @@ The `beercloak.resources.AbstractAdminResource` is ready to be used as a base cl
 1. Copy `beercloak-ear/target/beercloak-XXX.ear` into Keycloak's `standalone/deployments` directory.
 
 **Warning!** While Keycloak generally supports hot deployment of providers, this is *not supported* for EntityProviders.
-That means, BeerCloak shouldn't be hot deployed, otherwise you'll get exceptions and non-working code.  
+That means, BeerCloak shouldn't be hot (re)deployed, otherwise you'll get exceptions and non-working code.  
 See [KEYCLOAK-5782](https://issues.jboss.org/browse/KEYCLOAK-5782) for more info.
 
 2. Configure theme in your `standalone/configuration/standalone.xml`:
