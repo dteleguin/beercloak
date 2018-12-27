@@ -59,9 +59,9 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
 
         When cold deployed (i.e. provider is either present at "deployments" subdirectory or deployed as a JBoss module),
         postInit is invoked too early, specifically before initial realm population/migration.
-        In this case we should wait for PostMigrationEvent first. No transaction management needed, as transaction will be active already.
+        In this case we should wait for PostMigrationEvent first.
 
-        When hot deployed, PostMigrationEvent won't arrive, so we can do stuff right away, provided that we wrap it in a transaction.
+        When hot deployed, PostMigrationEvent won't arrive, so we can do stuff right away.
 
         NB: hot deployment is NOT yet supported for EntityProviders!
         Thus, hot deploying BeerCloak will result in exceptions and non-working code.
@@ -80,7 +80,7 @@ public class BeerResourceProviderFactory implements RealmResourceProviderFactory
             if (event instanceof RealmModel.RealmPostCreateEvent)
                 realmPostCreate((RealmModel.RealmPostCreateEvent) event);
             else if (event instanceof PostMigrationEvent)
-                initRoles(((PostMigrationEvent) event).getSession());
+                KeycloakModelUtils.runJobInTransaction(factory, this::initRoles);
         });
 
     }
