@@ -40,7 +40,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
     private final EntityManager em;
 
-    public BeerResource(EntityManager em) {
+    public BeerResource(RealmModel realm, EntityManager em) {
+        super(realm);
         this.em = em;
     }
 
@@ -77,7 +78,7 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
             query = em.createNamedQuery("findAllBeers", BeerEntity.class);
         }
 
-        query.setParameter("realmId", session.getContext().getRealm().getId());
+        query.setParameter("realmId", realm.getId());
 
         if (firstResult != null) {
             query.setFirstResult(firstResult);
@@ -102,7 +103,6 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
         auth.checkManageBeer();
 
-        RealmModel realm = session.getContext().getRealm();
         BeerEntity beer = new BeerEntity();
 
         beer.setId(KeycloakModelUtils.generateId());
@@ -224,8 +224,6 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
     private BeerEntity find(String id) {
 
-        RealmModel realm = session.getContext().getRealm();
-
         try {
             BeerEntity beer = em.createNamedQuery("findBeer", BeerEntity.class)
                     .setParameter("id", id)
@@ -240,7 +238,6 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
     private BeerRepresentation toRepresentation(BeerEntity entity) {
 
-        RealmModel realm = session.getContext().getRealm();
         BeerRepresentation rep = new BeerRepresentation();
 
         rep.setId(entity.getId());

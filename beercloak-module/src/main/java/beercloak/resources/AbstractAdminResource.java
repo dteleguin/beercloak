@@ -5,10 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
+import org.keycloak.common.ClientConnection;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.models.ClientModel;
@@ -31,13 +33,21 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
     private static final Logger LOG = Logger.getLogger(AbstractAdminResource.class);
 
     @Context
+    protected ClientConnection clientConnection;
+
+    @Context
     private HttpHeaders headers;
 
     @Context
     private KeycloakSession session;
 
+    protected RealmModel realm;
     protected T auth;
     protected AdminEventBuilder adminEvent;
+
+    public AbstractAdminResource(RealmModel realm) {
+        this.realm = realm;
+    }
 
     public void setup() {
         setupAuth();
@@ -69,17 +79,20 @@ public abstract class AbstractAdminResource<T extends AdminAuth> {
         if (realm == null) {
             throw new NotAuthorizedException("Unknown realm in token");
         }
-
-        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm);
-
+        session.getContext().setRealm(realm);
+        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm, session.getContext().getUri(), clientConnection, headers);
         if (authResult == null) {
             throw new NotAuthorizedException("Bearer");
         }
 
         ClientModel client
                 = realm.getName().equals(Config.getAdminRealm())
-                ? session.getContext().getRealm().getMasterAdminClient()
-                : realm.getClientByClientId(realmManager.getRealmAdminClientId(realm));
+                ? this.realm.getMasterAdminClient()
+                : this.realm.getClientByClientId(realmManager.getRealmAdminClientId(this.realm));
+
+        if (client == null) {
+            throw new NotFoundException("Could not find client for authorization");
+        }
 
         UserModel user = authResult.getUser();
 

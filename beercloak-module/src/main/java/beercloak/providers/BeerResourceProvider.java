@@ -4,6 +4,7 @@ import beercloak.resources.BeerResource;
 import javax.persistence.EntityManager;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.RealmModel;
 import org.keycloak.services.resource.RealmResourceProvider;
 
 /**
@@ -26,7 +27,8 @@ public class BeerResourceProvider implements RealmResourceProvider {
     @Override
     public Object getResource() {
 
-        BeerResource beer = new BeerResource(em);
+        RealmModel realm = session.getContext().getRealm();
+        BeerResource beer = new BeerResource(realm, em);
         ResteasyProviderFactory.getInstance().injectProperties(beer);
         beer.setup();
         return beer;
