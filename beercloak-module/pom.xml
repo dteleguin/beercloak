@@ -24,19 +24,19 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>4.8.1.Final</version>
+            <version>4.8.3.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi</artifactId>
-            <version>4.8.1.Final</version>
+            <version>4.8.3.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-model-jpa</artifactId>
-            <version>4.8.1.Final</version>
+            <version>4.8.3.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
