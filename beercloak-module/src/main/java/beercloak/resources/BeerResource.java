@@ -1,10 +1,8 @@
 package beercloak.resources;
 
-import beercloak.Drunkenness;
-import beercloak.models.jpa.entities.BeerEntity;
-import beercloak.representations.BeerRepresentation;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -22,6 +20,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.models.KeycloakSession;
@@ -30,17 +29,20 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.services.ErrorResponse;
 
-/**
- * @author <a href="mailto:mitya@cargosoft.ru">Dmitry Telegin</a>
- */
-public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
+import beercloak.Drunkenness;
+import beercloak.models.jpa.entities.BeerEntity;
+import beercloak.representations.BeerRepresentation;
+
+public class BeerResource extends AbstractAdminResource<BeerAdminAuth>
+{
 
     @Context
-    private KeycloakSession session;
+    private KeycloakSession     session;
 
     private final EntityManager em;
 
-    public BeerResource(RealmModel realm, EntityManager em) {
+    public BeerResource(RealmModel realm, EntityManager em)
+    {
         super(realm);
         this.em = em;
     }
@@ -49,7 +51,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     @NoCache
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public BeerRepresentation get(final @PathParam("id") String id) {
+    public BeerRepresentation get(final @PathParam("id") String id)
+    {
 
         auth.checkViewBeer();
 
@@ -62,8 +65,9 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     public List<BeerRepresentation> list(@QueryParam("search") String search,
-            @QueryParam("first") Integer firstResult,
-            @QueryParam("max") Integer maxResults) {
+                                         @QueryParam("first") Integer firstResult,
+                                         @QueryParam("max") Integer maxResults)
+    {
 
         auth.checkViewBeer();
 
@@ -74,7 +78,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         if (search != null) {
             query = em.createNamedQuery("findBeers", BeerEntity.class);
             query.setParameter("search", "%" + search + "%");
-        } else {
+        }
+        else {
             query = em.createNamedQuery("findAllBeers", BeerEntity.class);
         }
 
@@ -99,7 +104,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(final @Context UriInfo uriInfo, final BeerRepresentation rep) {
+    public Response create(final @Context UriInfo uriInfo, final BeerRepresentation rep)
+    {
 
         auth.checkManageBeer();
 
@@ -114,20 +120,20 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         try {
             em.persist(beer);
             em.flush();
-            
+
             adminEvent
-                    .operation(OperationType.CREATE)
+                .operation(OperationType.CREATE)
 //                    .resource(ResourceType.of("BEER"))
-                    .resourcePath(uriInfo, beer.getId())
-                    .representation(rep)
-                    .success();
-            
+                .resourcePath(uriInfo, beer.getId())
+                .representation(rep)
+                .success();
+
             if (session.getTransactionManager().isActive()) {
                 session.getTransactionManager().commit();
             }
-            
+
             return Response.created(uriInfo.getAbsolutePathBuilder().path(beer.getId()).build()).build();
-            
+
         } catch (ModelDuplicateException e) {
             if (session.getTransactionManager().isActive()) {
                 session.getTransactionManager().setRollbackOnly();
@@ -140,24 +146,28 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     @Path("{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(final @Context UriInfo uriInfo, final @PathParam("id") String id, final BeerRepresentation rep) {
+    public Response update(final @Context UriInfo uriInfo, final @PathParam("id") String id, final BeerRepresentation rep)
+    {
 
         auth.checkManageBeer();
 
         BeerEntity beer = find(id);
 
-        if (rep.getName() != null) beer.setName(rep.getName());
-        if (rep.getType() != null) beer.setType(rep.getType());
-        if (rep.getAbv() != null) beer.setAbv(rep.getAbv());
+        if (rep.getName() != null)
+            beer.setName(rep.getName());
+        if (rep.getType() != null)
+            beer.setType(rep.getType());
+        if (rep.getAbv() != null)
+            beer.setAbv(rep.getAbv());
 
         em.flush();
 
         adminEvent
-                .operation(OperationType.UPDATE)
+            .operation(OperationType.UPDATE)
 //                .resource(ResourceType.of("BEER"))
-                .resourcePath(uriInfo)
-                .representation(rep)
-                .success();
+            .resourcePath(uriInfo)
+            .representation(rep)
+            .success();
 
         if (session.getTransactionManager().isActive()) {
             session.getTransactionManager().commit();
@@ -170,7 +180,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     @Path("{id}")
     @DELETE
     @NoCache
-    public Response delete(final @Context UriInfo uriInfo, final @PathParam("id") String id) {
+    public Response delete(final @Context UriInfo uriInfo, final @PathParam("id") String id)
+    {
 
         auth.checkManageBeer();
 
@@ -180,10 +191,10 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         em.flush();
 
         adminEvent
-                .operation(OperationType.DELETE)
+            .operation(OperationType.DELETE)
 //                .resource(ResourceType.of("BEER"))
-                .resourcePath(uriInfo)
-                .success();
+            .resourcePath(uriInfo)
+            .success();
 
         if (session.getTransactionManager().isActive()) {
             session.getTransactionManager().commit();
@@ -197,7 +208,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String[] drink(final @Context UriInfo uriInfo, final @PathParam("id") String id, Integer[] _qty) {
+    public String[] drink(final @Context UriInfo uriInfo, final @PathParam("id") String id, Integer[] _qty)
+    {
 
         auth.checkManageBeer();
 
@@ -208,27 +220,29 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
         Drunkenness d = Drunkenness.drunk(beer.getAbv(), qty);
 
         adminEvent
-                .operation(OperationType.ACTION)
+            .operation(OperationType.ACTION)
 //                .resource(ResourceType.of("BEER"))
-                .resourcePath(uriInfo)
-                .success();
+            .resourcePath(uriInfo)
+            .success();
 
-        return new String[] { d.toString() };
+        return new String[] {d.toString()};
 
     }
 
     @Path("types")
-    public BeerTypeResource types() {
+    public BeerTypeResource types()
+    {
         return new BeerTypeResource();
     }
 
-    private BeerEntity find(String id) {
+    private BeerEntity find(String id)
+    {
 
         try {
             BeerEntity beer = em.createNamedQuery("findBeer", BeerEntity.class)
-                    .setParameter("id", id)
-                    .setParameter("realmId", realm.getId())
-                    .getSingleResult();
+                .setParameter("id", id)
+                .setParameter("realmId", realm.getId())
+                .getSingleResult();
             return beer;
         } catch (NoResultException e) {
             throw new NotFoundException("Beer not found");
@@ -236,7 +250,8 @@ public class BeerResource extends AbstractAdminResource<BeerAdminAuth> {
 
     }
 
-    private BeerRepresentation toRepresentation(BeerEntity entity) {
+    private BeerRepresentation toRepresentation(BeerEntity entity)
+    {
 
         BeerRepresentation rep = new BeerRepresentation();
 

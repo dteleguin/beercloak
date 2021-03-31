@@ -1,55 +1,62 @@
 package beercloak.representations;
 
-/**
- *
- * @author <a href="mailto:mitya@cargosoft.ru">Dmitry Telegin</a>
- */
-public class BeerRepresentation {
+public class BeerRepresentation
+{
 
     protected String self; // link
     protected String id;
 
     protected String name;
     protected String type;
-    protected Float abv;
+    protected Float  abv;
 
-    public String getSelf() {
+    public String getSelf()
+    {
         return self;
     }
 
-    public void setSelf(String self) {
+    public void setSelf(String self)
+    {
         this.self = self;
     }
 
-    public String getId() {
+    public String getId()
+    {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id)
+    {
         this.id = id;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public String getType() {
+    public String getType()
+    {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(String type)
+    {
         this.type = type;
     }
 
-    public Float getAbv() {
+    public Float getAbv()
+    {
         return abv;
     }
 
-    public void setAbv(Float abv) {
+    public void setAbv(Float abv)
+    {
         this.abv = abv;
     }
 
