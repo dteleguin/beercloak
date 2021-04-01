@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  keycloak:
+    container_name: beercloak
+    image: "jboss/keycloak:${KEYCLOAK_VERSION}"
+    ports:
+    - 18080:8080
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: keycloak
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/beer-realm.json
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - "./beercloak-ear/target/beercloak-docker.ear:/opt/jboss/keycloak/standalone/deployments/beercloak.ear"
+    - "./test/beer-realm.json:/opt/jboss/keycloak/imports/beer-realm.json"
