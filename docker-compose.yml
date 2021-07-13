@@ -18,7 +18,6 @@ services:
 
   maildev:
     container_name: maildev
-    container_name: invitation-maildev
     image: maildev/maildev:1.1.0
     ports:
     - "1080:80"
