@@ -1,5 +1,12 @@
 # BeerCloak: a comprehensive Keycloak extension example
 
+---
+**TL;DR**
+
+Use `./test/start.sh` to run the project.
+
+---
+
 BeerCloak is a collection of different techniques for building custom admin resources in Keycloak.
 
 * `BeerEntity` JPA entity + Liquibase changelog
