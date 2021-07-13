@@ -13,3 +13,23 @@ services:
     - /etc/localtime:/etc/localtime:ro
     - "./beercloak-ear/target/beercloak-docker.ear:/opt/jboss/keycloak/standalone/deployments/beercloak.ear"
     - "./test/beer-realm.json:/opt/jboss/keycloak/imports/beer-realm.json"
+    networks:
+    - beernet
+
+  maildev:
+    container_name: maildev
+    container_name: invitation-maildev
+    image: maildev/maildev:1.1.0
+    ports:
+    - "1080:80"
+    - "1234:25"
+    networks:
+    - beernet
+
+networks:
+  beernet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.18.0.0/16

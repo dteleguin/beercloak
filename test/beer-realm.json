@@ -619,7 +619,14 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "host": "172.18.0.1",
+    "port": "1234",
+    "from": "test@example.de",
+    "starttls": "",
+    "auth": "",
+    "ssl": ""
+  },
   "loginTheme": "beer",
   "accountTheme": "beer",
   "adminTheme": "beer",
