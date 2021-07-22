@@ -40,6 +40,30 @@
   "quickLoginCheckMilliSeconds": 1000,
   "maxDeltaTimeSeconds": 43200,
   "failureFactor": 30,
+  "users": [
+    {
+		"username": "brewer",
+		"enabled": true,
+		"email": "brewer@beercloak.com",
+		"firstName": "Kai",
+		"lastName": "Kamerun",
+		"credentials": [
+			{
+				"type": "password",
+				"value": "beercloak!"
+			}
+		],
+		"clientRoles": {
+			"account": [
+				"view-profile",
+				"manage-account"
+			],
+			"realm-management": [
+				"realm-admin"
+			]
+		}
+	}
+  ],
   "roles": {
     "realm": [
       {
