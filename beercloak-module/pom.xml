@@ -30,11 +30,5 @@
       <artifactId>keycloak-model-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>beercloak</groupId>
-      <artifactId>beercloak-core</artifactId>
-      <version>${revision}${changelist}</version>
-      <type>jar</type>
-    </dependency>
   </dependencies>
 </project>

@@ -2,17 +2,20 @@ version: '3.7'
 services:
   keycloak:
     container_name: beercloak
-    image: "jboss/keycloak:${KEYCLOAK_VERSION}"
+    image: "quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}"
     ports:
     - 18080:8080
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: keycloak
+      KC_HTTP_RELATIVE_PATH: /auth
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: keycloak
       KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/beer-realm.json
+    command: start-dev
     volumes:
     - /etc/localtime:/etc/localtime:ro
-    - "./beercloak-ear/target/beercloak-docker.ear:/opt/jboss/keycloak/standalone/deployments/beercloak.ear"
-    - "./test/beer-realm.json:/opt/jboss/keycloak/imports/beer-realm.json"
+    - "./beercloak-module/target/beercloak-module-docker.jar:/opt/keycloak/providers/beercloak.jar"
+    - "./beercloak-module/src/main/resources/theme/beer:/opt/keycloak/themes/beer"
+    - "./test/beer-realm.json:/opt/keycloak/imports/beer-realm.json"
     networks:
     - beernet
 
