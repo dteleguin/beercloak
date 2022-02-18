@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # get keycloak version from pom
-KEYCLOAK_VERSION=$(mvn help:evaluate -Dexpression=keycloak.version -q -DforceStdout)
+export KEYCLOAK_VERSION=$(mvn help:evaluate -Dexpression=keycloak.version -q -DforceStdout)
 
 function cleanup {
   printf '\U1F433 %s\n' "Stopping Docker containers"
