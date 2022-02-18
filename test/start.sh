@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # get keycloak version from pom
-KEYCLOAK_VERSION=$(mvn help:evaluate -Dexpression=keycloak.version -q -DforceStdout)
+export KEYCLOAK_VERSION=$(mvn help:evaluate -Dexpression=keycloak.version -q -DforceStdout)
 
 function cleanup {
   printf '\U1F433 %s\n' "Stopping Docker containers"
@@ -16,5 +16,8 @@ if [[ "$?" -ne 0 ]] ; then
   echo 'could not run maven package'; exit $rc
 fi
 
+# replace keycloak version in Dockerfile
+envsubst < Dockerfile > tmp && mv tmp Dockerfile
+
 # start docker
-KEYCLOAK_VERSION=$KEYCLOAK_VERSION docker-compose up --build
+docker-compose up --build

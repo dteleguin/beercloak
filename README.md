@@ -3,7 +3,7 @@
 ---
 **TL;DR**
 
-Use `./test/start.sh` to run the project.
+Use `./test/start.sh` to run the project. (You will need [certificates](#generating-certificates).)
 
 ---
 
@@ -16,7 +16,6 @@ BeerCloak is a collection of different techniques for building custom admin reso
   * automatically created for each existing realm
   * automatically created for each newly added realm
   * automatically included into the master `admin` role
-  * ~~used for authorization on `BeerResource` and sub-resources~~
 * GUI extensions to the admin console
 
 ### Structure
@@ -27,15 +26,57 @@ BeerCloak is a collection of different techniques for building custom admin reso
 
 ## Requirements
 
-* Keycloak 12.0.4+
+* Keycloak 17.0.0+
+* something to generate TLS certificates (`mkcert` or `openssl`)
 
-## Build
+## Generating certificates
 
-`mvn install`
+### Using a valid certificate
 
-## Installation
+1. Add the test domain to your hosts file (`/etc/hosts`)
+   ```
+   127.0.0.1 id.keycloak.test
+   ```
+   
+2. Generate the certificates
+   ```
+   mkcert -install id.keycloak.test 127.0.0.1
+   ```
+   
+3. Rename the certificate and key to `cert.pem` and `cert-key.pem` respectively.
 
-Copy `beercloak-ear/target/beercloak-XXX.ear` into Keycloak's `standalone/deployments` directory.
+4. Update permissions for the key
+   ```
+   chmod 755 cert-key.pem
+   ```
+
+### Invalid certificate
+
+If you don't care about the certificate being valid, you can use `openssl` to generate one.
+
+1. Generate the certificates
+   ```
+   openssl req -newkey rsa:2048 -nodes -keyout cert-key.pem -x509 -days 3650 -out cert.pem
+   ```
+   
+2. Update permissions for the key
+   ```￼
+   chmod 755 cert-key.pem
+   ```
+
+3. Update `docker-compose.yml` > `KC_HOSTNAME` to:
+   ```yaml
+   KC_HOSTNAME: localhost:8443
+   ```
+
+## Run Beercloak
+
+Execute `test/start.sh` to build the extension and run Keycloak with Maildev.
+
+## Manual build
+
+1. Run `mvn install`
+2. Copy `beercloak-ear/target/beercloak-XXX.ear` into Keycloak's `/opt/keycloak/providers` directory.
 
 ## Running example
 
