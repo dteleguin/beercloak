@@ -1,5 +1,9 @@
 # BeerCloak: a comprehensive Keycloak extension example
 
+![beer](https://img.shields.io/badge/beer-flowing-green)
+![hops](https://img.shields.io/badge/hops-100%25-green)
+![soberness](https://img.shields.io/badge/soberness-none-red)
+
 ---
 **TL;DR**
 
