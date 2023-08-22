@@ -1,0 +1,16 @@
+.login-pf body {
+    background: url('../img/login-bg.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+div.kc-logo-text {
+    background: url('../img/kc-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 120px;
+}
+
+.card-pf {
+  background: rgba(255, 255, 255, 0.7);
+}
