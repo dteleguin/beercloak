@@ -7,14 +7,14 @@
 
   <groupId>beercloak</groupId>
   <artifactId>beercloak</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${revision}-${keycloak.version}${changelist}</version>
   <packaging>jar</packaging>
 
   <properties>
-    <keycloak.version>17.0.0</keycloak.version>
-    <revision>3.0</revision>
+    <keycloak.version>22.0.1</keycloak.version>
+    <revision>1.0</revision>
     <changelist>-SNAPSHOT</changelist>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>

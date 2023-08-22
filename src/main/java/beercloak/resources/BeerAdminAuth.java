@@ -1,6 +1,6 @@
 package beercloak.resources;
 
-import javax.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotAuthorizedException;
 
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.RealmModel;

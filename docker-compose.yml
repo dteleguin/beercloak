@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.9'
 services:
   keycloak:
     container_name: beercloak
@@ -7,10 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
     - 18080:8080
-    - 8443:8443
+    - 443:8443
     environment:
       KC_HTTP_RELATIVE_PATH: /auth
-      KC_HOSTNAME: id.keycloak.test:8443
+      KC_HOSTNAME: id.keycloak.test
       KC_HTTPS_CERTIFICATE_FILE: /etc/x509/https/tls.crt
       KC_HTTPS_CERTIFICATE_KEY_FILE: /etc/x509/https/tls.key
       KEYCLOAK_ADMIN: admin
@@ -21,7 +21,6 @@ services:
     - /etc/localtime:/etc/localtime:ro
     - ./cert.pem:/etc/x509/https/tls.crt
     - ./cert-key.pem:/etc/x509/https/tls.key
-    - "./target/beercloak-docker.jar:/opt/keycloak/providers/beercloak.jar"
     - "./test/beer-realm.json:/opt/keycloak/imports/beer-realm.json"
     networks:
     - beernet

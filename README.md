@@ -9,6 +9,8 @@
 
 Use `./test/start.sh` to run the project. (You will need [certificates](#generating-certificates).)
 
+Go to [id.keycloak.test/auth](https://id.keycloak.test/auth/).
+
 ---
 
 BeerCloak is a collection of different techniques for building custom admin resources in Keycloak.
@@ -30,7 +32,8 @@ BeerCloak is a collection of different techniques for building custom admin reso
 
 ## Requirements
 
-* Keycloak 17.0.0+
+* Keycloak 22.0
+* Java 17
 * something to generate TLS certificates (`mkcert` or `openssl`)
 
 ## Generating certificates
@@ -42,9 +45,9 @@ BeerCloak is a collection of different techniques for building custom admin reso
    127.0.0.1 id.keycloak.test
    ```
    
-2. Generate the certificates
+2. Generate the certificates with [`mkcert`](https://github.com/FiloSottile/mkcert)
    ```
-   mkcert -install id.keycloak.test 127.0.0.1
+   mkcert -install -cert-file cert.pem -key-file cert-key.pem id.keycloak.test 127.0.0.1
    ```
    
 3. Rename the certificate and key to `cert.pem` and `cert-key.pem` respectively.
@@ -52,6 +55,11 @@ BeerCloak is a collection of different techniques for building custom admin reso
 4. Update permissions for the key
    ```
    chmod 755 cert-key.pem
+   ```
+
+5. Update `docker-compose.yml` > `KC_HOSTNAME` to:
+   ```yaml
+   KC_HOSTNAME: id.keycloak.test
    ```
 
 ### Invalid certificate
@@ -70,7 +78,7 @@ If you don't care about the certificate being valid, you can use `openssl` to ge
 
 3. Update `docker-compose.yml` > `KC_HOSTNAME` to:
    ```yaml
-   KC_HOSTNAME: localhost:8443
+   KC_HOSTNAME: localhost
    ```
 
 ## Run Beercloak

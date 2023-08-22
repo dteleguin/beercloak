@@ -3,9 +3,7 @@ package beercloak.providers;
 import static beercloak.resources.BeerAdminAuth.ROLE_MANAGE_BEER;
 import static beercloak.resources.BeerAdminAuth.ROLE_VIEW_BEER;
 import java.util.List;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
@@ -20,6 +18,9 @@ import org.keycloak.models.utils.PostMigrationEvent;
 import org.keycloak.provider.ProviderEvent;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 public class BeerResourceProviderFactory
     implements RealmResourceProviderFactory
@@ -118,7 +119,7 @@ public class BeerResourceProviderFactory
         LOG.debug("BeerResourceProviderFactory::initRoles");
 
         ClientModel client;
-        List<RealmModel> realms = session.realms().getRealms();
+        List<RealmModel> realms = session.realms().getRealmsStream().toList();
         RealmManager manager = new RealmManager(session);
         for (RealmModel realm : realms) {
             client = realm.getMasterAdminClient();
